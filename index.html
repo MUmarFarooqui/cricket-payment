@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cricket Payment</title>
+<title>Cricket Match Creation</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -121,9 +121,10 @@
   }
 
   .field:nth-child(1) { animation-delay: 0.1s; }
-  .field:nth-child(2) { animation-delay: 0.2s; }
-  .field:nth-child(3) { animation-delay: 0.3s; }
-  .field:nth-child(4) { animation-delay: 0.4s; }
+  .field:nth-child(2) { animation-delay: 0.15s; }
+  .field:nth-child(3) { animation-delay: 0.2s; }
+  .field:nth-child(4) { animation-delay: 0.25s; }
+  .field:nth-child(5) { animation-delay: 0.3s; }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -142,7 +143,7 @@
 
   label span.required { color: var(--gold); margin-left: 2px; }
 
-  input[type="date"], input[type="number"] {
+  input[type="date"], input[type="number"], input[type="text"] {
     width: 100%;
     padding: 14px 16px;
     border: 1.5px solid var(--border);
@@ -152,16 +153,15 @@
     color: var(--dark);
     background: white;
     transition: all 0.2s;
-    appearance: none;
-    -webkit-appearance: none;
     outline: none;
   }
 
-  input[type="date"]:focus, input[type="number"]:focus {
+  input:focus {
     border-color: var(--green-light);
     box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
   }
 
+  /* Checkbox list */
   .checkbox-list {
     border: 1.5px solid var(--border);
     border-radius: 12px;
@@ -193,11 +193,7 @@
     flex-shrink: 0;
   }
 
-  .checkbox-item span {
-    font-size: 15px;
-    color: var(--dark);
-  }
-
+  .checkbox-item span { font-size: 15px; color: var(--dark); }
   .checkbox-item.checked { background: var(--green-pale); }
   .checkbox-item.checked span { color: var(--green); font-weight: 500; }
 
@@ -209,24 +205,16 @@
     display: none;
   }
 
-  textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--dark);
-    background: white;
-    transition: all 0.2s;
-    outline: none;
-    resize: none;
-    height: 80px;
-  }
-
-  textarea:focus {
-    border-color: var(--green-light);
-    box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
+  .per-head-preview {
+    display: none;
+    background: var(--green-pale);
+    border: 1px solid rgba(45,138,71,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--green);
+    margin-top: 8px;
+    font-weight: 500;
   }
 
   .submit-btn {
@@ -258,8 +246,6 @@
     transform: translateY(-1px);
     box-shadow: 0 8px 20px rgba(26,92,46,0.3);
   }
-
-  .submit-btn:active { transform: translateY(0); }
 
   .submit-btn:disabled {
     background: var(--gray);
@@ -359,18 +345,6 @@
     0%, 100% { opacity: 0.3; transform: scale(0.8); }
     50% { opacity: 1; transform: scale(1); }
   }
-
-  .per-head-badge {
-    display: none;
-    background: var(--green-pale);
-    border: 1px solid rgba(45,138,71,0.2);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--green);
-    margin-top: 8px;
-    font-weight: 500;
-  }
 </style>
 </head>
 <body>
@@ -379,13 +353,29 @@
 <div class="card">
   <div class="header">
     <div class="header-tag">Cricket Team</div>
-    <h1>Payment<br>Submission</h1>
-    <p>Submit your match fee payment below</p>
+    <h1>New Match<br>Creation</h1>
+    <p>Fill in the match details below</p>
   </div>
   <div class="gold-bar"></div>
 
   <div class="form-body" id="formBody">
     <div class="error-msg" id="errorMsg"></div>
+
+    <div class="field">
+      <label>Match Date <span class="required">*</span></label>
+      <input type="date" id="matchDate" required />
+    </div>
+
+    <div class="field">
+      <label>Ground / Venue <span class="required">*</span></label>
+      <input type="text" id="groundName" placeholder="e.g. KRL Ground, Islamabad" required />
+    </div>
+
+    <div class="field">
+      <label>Total Cost (PKR) <span class="required">*</span></label>
+      <input type="number" id="totalCost" placeholder="e.g. 6000" min="1" required />
+      <div class="per-head-preview" id="perHeadPreview"></div>
+    </div>
 
     <div class="field">
       <label>Select Players <span class="required">*</span></label>
@@ -397,38 +387,23 @@
       <div class="selected-count" id="selectedCount"></div>
     </div>
 
-    <div class="field">
-      <label>Match Date <span class="required">*</span></label>
-      <input type="date" id="matchDate" required />
-      <div class="per-head-badge" id="perHeadBadge"></div>
-    </div>
-
-    <div class="field">
-      <label>Total Match Amount (PKR) <span class="required">*</span></label>
-      <input type="number" id="amountPaid" placeholder="e.g. 2750" min="1" required />
-    </div>
-
-    <div class="field">
-      <label>Comment (Optional)</label>
-      <textarea id="comment" placeholder="Any note for the admin..."></textarea>
-    </div>
-
     <button class="submit-btn" id="submitBtn" onclick="submitForm()">
-      Submit Payment
+      Create Match
     </button>
   </div>
 
   <div class="success-screen" id="successScreen">
-    <div class="success-icon">✅</div>
-    <h2>Payment Submitted!</h2>
-    <p>Your payment has been logged successfully.<br>The admin will verify and confirm shortly.</p>
+    <div class="success-icon">🏏</div>
+    <h2>Match Created!</h2>
+    <p>Match has been logged successfully.<br>Players will be notified on WhatsApp.</p>
   </div>
 </div>
 
 <script>
   const SHEET_ID = '1erUaLSV1T-FV3JF8mc0O3l3Q1mHLwMe1hrB94YQn3mE';
-  const WEBHOOK_URL = 'https://umarfarooqui.app.n8n.cloud/webhook/1e437cd8-05f7-47b1-82a2-90fb770e1e3b';
+  const WEBHOOK_URL = 'https://umarfarooqui.app.n8n.cloud/webhook/794da8d2-68f9-4afd-ac6d-a2ddf9ef96a8';
 
+  // Load players as checkboxes from Members tab
   async function loadPlayers() {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Members&range=B3:B50`;
@@ -448,6 +423,7 @@
           item.querySelector('input').addEventListener('change', function() {
             item.classList.toggle('checked', this.checked);
             updateCount();
+            updatePerHead();
           });
           list.appendChild(item);
         }
@@ -471,74 +447,48 @@
     }
   }
 
-  async function loadMatchForDate(date) {
-    try {
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Matches&range=A3:G50`;
-      const res = await fetch(url);
-      const text = await res.text();
-      const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-
-      const rows = json.table.rows;
-      const badge = document.getElementById('perHeadBadge');
-
-      for (const row of rows) {
-        if (!row.c[1] || !row.c[1].v) continue;
-        const dateVal = row.c[1].v;
-        let sheetDate = '';
-        if (typeof dateVal === 'string') {
-          sheetDate = dateVal.slice(0, 10);
-        } else if (dateVal && dateVal.toString().includes('Date')) {
-          const match = dateVal.toString().match(/Date\((\d+),(\d+),(\d+)\)/);
-          if (match) {
-            const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-            sheetDate = d.toISOString().slice(0, 10);
-          }
-        }
-        if (sheetDate === date) {
-          const perHead = row.c[5] ? row.c[5].v : null;
-          const ground = row.c[2] ? row.c[2].v : '';
-          if (perHead) {
-            badge.style.display = 'block';
-            badge.innerHTML = `🏟️ <strong>${ground}</strong> &nbsp;|&nbsp; Per head: <strong>PKR ${perHead}</strong>`;
-            document.getElementById('amountPaid').value = perHead;
-            return;
-          }
-        }
-      }
-      badge.style.display = 'none';
-    } catch(e) {
-      console.log('Could not load match data');
+  function updatePerHead() {
+    const totalCost = parseFloat(document.getElementById('totalCost').value);
+    const checked = document.querySelectorAll('#checkboxList input:checked');
+    const preview = document.getElementById('perHeadPreview');
+    if (totalCost && checked.length > 0) {
+      const perHead = Math.ceil(totalCost / checked.length);
+      preview.style.display = 'block';
+      preview.innerHTML = `Per head: <strong>PKR ${perHead}</strong> (${checked.length} players)`;
+    } else {
+      preview.style.display = 'none';
     }
   }
 
-  document.getElementById('matchDate').addEventListener('change', function() {
-    loadMatchForDate(this.value);
-  });
+  document.getElementById('totalCost').addEventListener('input', updatePerHead);
 
   async function submitForm() {
-    const checkedPlayers = Array.from(document.querySelectorAll('#checkboxList input:checked')).map(cb => cb.value);
     const matchDate = document.getElementById('matchDate').value;
-    const amountPaid = document.getElementById('amountPaid').value;
-    const comment = document.getElementById('comment').value;
+    const groundName = document.getElementById('groundName').value;
+    const totalCost = document.getElementById('totalCost').value;
+    const checkedPlayers = Array.from(document.querySelectorAll('#checkboxList input:checked')).map(cb => cb.value);
     const errorMsg = document.getElementById('errorMsg');
 
-    if (checkedPlayers.length === 0 || !matchDate || !amountPaid) {
+    if (!matchDate || !groundName || !totalCost || checkedPlayers.length === 0) {
       errorMsg.style.display = 'block';
-      errorMsg.textContent = '⚠️ Please select at least one player, match date and amount.';
+      errorMsg.textContent = '⚠️ Please fill all fields and select at least one player.';
       return;
     }
 
     errorMsg.style.display = 'none';
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = '<div class="loading-state"><div class="spinner"></div>Submitting...</div>';
+    btn.innerHTML = '<div class="loading-state"><div class="spinner"></div>Creating...</div>';
 
     try {
+      const perHead = Math.ceil(parseFloat(totalCost) / checkedPlayers.length);
+
       const payload = {
-        Players: checkedPlayers.join(', '),
         'Match Date': matchDate,
-        'Amount Paid': parseFloat(amountPaid),
-        'Comment (If any)': comment
+        'Ground Name': groundName,
+        'Total Match Fee': parseFloat(totalCost),
+        'Players': checkedPlayers.join(', '),
+        'Per Head': perHead
       };
 
       const response = await fetch(WEBHOOK_URL, {
@@ -557,11 +507,11 @@
       errorMsg.style.display = 'block';
       errorMsg.textContent = '❌ Submission failed. Please check your connection and try again.';
       btn.disabled = false;
-      btn.innerHTML = 'Submit Payment';
+      btn.innerHTML = 'Create Match';
     }
   }
 
   loadPlayers();
 </script>
 </body>
-</html>
+</html>vv
