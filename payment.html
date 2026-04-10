@@ -599,17 +599,24 @@
         let dateStr = '';
         let displayDate = '';
 
-        if (typeof dateVal === 'string') {
-          dateStr = dateVal.slice(0, 10);
-          displayDate = dateStr;
-        } else if (dateVal.toString().includes('Date')) {
-          const match = dateVal.toString().match(/Date\((\d+),(\d+),(\d+)\)/);
-          if (match) {
-            const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-            dateStr = d.toISOString().slice(0, 10);
-            displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-          }
-        }
+        if (typeof dateVal === 'string' && dateVal.includes('Date')) {
+  const match = dateVal.match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (match) {
+    const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+    dateStr = d.toISOString().slice(0, 10);
+    displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  }
+} else if (typeof dateVal === 'string') {
+  dateStr = dateVal.slice(0, 10);
+  displayDate = new Date(dateStr).toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+} else if (dateVal && dateVal.toString().includes('Date')) {
+  const match = dateVal.toString().match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (match) {
+    const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+    dateStr = d.toISOString().slice(0, 10);
+    displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  }
+}
 
         if (!dateStr) return;
 
