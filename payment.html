@@ -579,7 +579,7 @@
   // Load matches as checkboxes
   async function loadMatches() {
     try {
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Matches&range=A3:G50`;
+      const url = `const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Matches&range=A3:G50`;`;
       const res = await fetch(url);
       const text = await res.text();
       const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
@@ -588,6 +588,10 @@
 
       json.table.rows.forEach(row => {
         if (!row.c[0] || !row.c[0].v) return;
+
+        // Only show matches with Status = Open (column G = index 6)
+        const status = row.c[6] ? row.c[6].v : '';
+        if (status !== 'Open') return;
 
         const matchId = row.c[0].v;
         const dateVal = row.c[1] ? row.c[1].v : null;
