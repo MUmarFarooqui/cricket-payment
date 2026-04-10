@@ -1,4 +1,4 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16,7 +16,6 @@
     --gray: #6b7c70;
     --border: #d0e4d8;
     --error: #c0392b;
-    --success: #1a5c2e;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -86,7 +85,6 @@
   }
 
   .header-tag {
-    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 3px;
@@ -115,9 +113,7 @@
     background: linear-gradient(90deg, var(--gold), transparent);
   }
 
-  .form-body {
-    padding: 32px;
-  }
+  .form-body { padding: 32px; }
 
   .field {
     margin-bottom: 20px;
@@ -128,7 +124,6 @@
   .field:nth-child(2) { animation-delay: 0.2s; }
   .field:nth-child(3) { animation-delay: 0.3s; }
   .field:nth-child(4) { animation-delay: 0.4s; }
-  .field:nth-child(5) { animation-delay: 0.5s; }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -145,12 +140,9 @@
     margin-bottom: 8px;
   }
 
-  label span.required {
-    color: var(--gold);
-    margin-left: 2px;
-  }
+  label span.required { color: var(--gold); margin-left: 2px; }
 
-  select, input[type="date"], input[type="number"] {
+  input[type="date"], input[type="number"] {
     width: 100%;
     padding: 14px 16px;
     border: 1.5px solid var(--border);
@@ -165,74 +157,56 @@
     outline: none;
   }
 
-  select:focus, input[type="date"]:focus, input[type="number"]:focus {
+  input[type="date"]:focus, input[type="number"]:focus {
     border-color: var(--green-light);
     box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
   }
 
-  .select-wrap {
-    position: relative;
-  }
-
-  .select-wrap::after {
-    content: '▾';
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--gray);
-    pointer-events: none;
-    font-size: 14px;
-  }
-
-  .upload-area {
-    border: 2px dashed var(--border);
+  .checkbox-list {
+    border: 1.5px solid var(--border);
     border-radius: 12px;
-    padding: 28px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--green-pale);
-    position: relative;
     overflow: hidden;
+    background: white;
+    max-height: 280px;
+    overflow-y: auto;
   }
 
-  .upload-area:hover, .upload-area.dragover {
-    border-color: var(--green-light);
-    background: rgba(45,138,71,0.08);
-  }
-
-  .upload-area input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
     cursor: pointer;
-    width: 100%;
-    height: 100%;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
   }
 
-  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .checkbox-item:last-child { border-bottom: none; }
+  .checkbox-item:hover { background: var(--green-pale); }
 
-  .upload-area p {
-    font-size: 13px;
-    color: var(--gray);
-    line-height: 1.5;
+  .checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
-  .upload-area p strong {
+  .checkbox-item span {
+    font-size: 15px;
+    color: var(--dark);
+  }
+
+  .checkbox-item.checked { background: var(--green-pale); }
+  .checkbox-item.checked span { color: var(--green); font-weight: 500; }
+
+  .selected-count {
+    font-size: 12px;
     color: var(--green-light);
-    display: block;
-    font-size: 14px;
-    margin-bottom: 2px;
-  }
-
-  .preview-img {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 8px;
-    margin-top: 12px;
+    margin-top: 6px;
+    font-weight: 500;
     display: none;
-    object-fit: cover;
   }
 
   textarea {
@@ -344,11 +318,7 @@
     margin-bottom: 8px;
   }
 
-  .success-screen p {
-    color: var(--gray);
-    font-size: 14px;
-    line-height: 1.6;
-  }
+  .success-screen p { color: var(--gray); font-size: 14px; line-height: 1.6; }
 
   .error-msg {
     display: none;
@@ -372,10 +342,7 @@
     gap: 10px;
   }
 
-  .dot-pulse {
-    display: flex;
-    gap: 4px;
-  }
+  .dot-pulse { display: flex; gap: 4px; }
 
   .dot-pulse span {
     width: 6px;
@@ -421,16 +388,13 @@
     <div class="error-msg" id="errorMsg"></div>
 
     <div class="field">
-      <label>Your Name <span class="required">*</span></label>
-      <div class="select-wrap">
-        <div class="loading-players" id="loadingPlayers">
-          <div class="dot-pulse"><span></span><span></span><span></span></div>
-          Loading players...
-        </div>
-        <select id="playerSelect" style="display:none;" required>
-          <option value="">Select your name</option>
-        </select>
+      <label>Select Players <span class="required">*</span></label>
+      <div class="loading-players" id="loadingPlayers">
+        <div class="dot-pulse"><span></span><span></span><span></span></div>
+        Loading players...
       </div>
+      <div class="checkbox-list" id="checkboxList" style="display:none;"></div>
+      <div class="selected-count" id="selectedCount"></div>
     </div>
 
     <div class="field">
@@ -440,18 +404,8 @@
     </div>
 
     <div class="field">
-      <label>Amount Paid (PKR) <span class="required">*</span></label>
+      <label>Total Match Amount (PKR) <span class="required">*</span></label>
       <input type="number" id="amountPaid" placeholder="e.g. 2750" min="1" required />
-    </div>
-
-    <div class="field">
-      <label>Payment Screenshot <span class="required">*</span></label>
-      <div class="upload-area" id="uploadArea">
-        <input type="file" id="paymentProof" accept="image/*" required />
-        <div class="upload-icon">📎</div>
-        <p><strong>Tap to upload screenshot</strong>Bank transfer proof required</p>
-        <img class="preview-img" id="previewImg" alt="Preview" />
-      </div>
     </div>
 
     <div class="field">
@@ -475,51 +429,62 @@
   const SHEET_ID = '1erUaLSV1T-FV3JF8mc0O3l3Q1mHLwMe1hrB94YQn3mE';
   const WEBHOOK_URL = 'https://umarfarooqui.app.n8n.cloud/webhook/1e437cd8-05f7-47b1-82a2-90fb770e1e3b';
 
-  // Load players from Google Sheets Members tab
   async function loadPlayers() {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Members&range=B3:B50`;
       const res = await fetch(url);
       const text = await res.text();
       const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-      
-      const select = document.getElementById('playerSelect');
+
+      const list = document.getElementById('checkboxList');
       const rows = json.table.rows;
-      
+
       rows.forEach(row => {
         if (row.c[0] && row.c[0].v) {
-          const opt = document.createElement('option');
-          opt.value = row.c[0].v;
-          opt.textContent = row.c[0].v;
-          select.appendChild(opt);
+          const name = row.c[0].v;
+          const item = document.createElement('label');
+          item.className = 'checkbox-item';
+          item.innerHTML = `<input type="checkbox" value="${name}" /><span>${name}</span>`;
+          item.querySelector('input').addEventListener('change', function() {
+            item.classList.toggle('checked', this.checked);
+            updateCount();
+          });
+          list.appendChild(item);
         }
       });
 
       document.getElementById('loadingPlayers').style.display = 'none';
-      select.style.display = 'block';
+      list.style.display = 'block';
     } catch (e) {
       document.getElementById('loadingPlayers').innerHTML = '⚠️ Could not load players. Please refresh.';
     }
   }
 
-  // Load matches to show per head when date is selected
+  function updateCount() {
+    const checked = document.querySelectorAll('#checkboxList input:checked');
+    const countEl = document.getElementById('selectedCount');
+    if (checked.length > 0) {
+      countEl.textContent = `${checked.length} player${checked.length > 1 ? 's' : ''} selected`;
+      countEl.style.display = 'block';
+    } else {
+      countEl.style.display = 'none';
+    }
+  }
+
   async function loadMatchForDate(date) {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Matches&range=A3:G50`;
       const res = await fetch(url);
       const text = await res.text();
       const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-      
+
       const rows = json.table.rows;
       const badge = document.getElementById('perHeadBadge');
-      
+
       for (const row of rows) {
         if (!row.c[1] || !row.c[1].v) continue;
-        
-        // Parse sheet date
         const dateVal = row.c[1].v;
         let sheetDate = '';
-        
         if (typeof dateVal === 'string') {
           sheetDate = dateVal.slice(0, 10);
         } else if (dateVal && dateVal.toString().includes('Date')) {
@@ -529,7 +494,6 @@
             sheetDate = d.toISOString().slice(0, 10);
           }
         }
-        
         if (sheetDate === date) {
           const perHead = row.c[5] ? row.c[5].v : null;
           const ground = row.c[2] ? row.c[2].v : '';
@@ -541,86 +505,40 @@
           }
         }
       }
-      
       badge.style.display = 'none';
     } catch(e) {
       console.log('Could not load match data');
     }
   }
 
-  // File preview
-  document.getElementById('paymentProof').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = document.getElementById('previewImg');
-        img.src = e.target.result;
-        img.style.display = 'block';
-        document.querySelector('.upload-area p').style.display = 'none';
-        document.querySelector('.upload-icon').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // Date change listener
   document.getElementById('matchDate').addEventListener('change', function() {
     loadMatchForDate(this.value);
   });
 
-  // Drag and drop
-  const uploadArea = document.getElementById('uploadArea');
-  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-  uploadArea.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) document.getElementById('paymentProof').files = e.dataTransfer.files;
-  });
-
-  // Submit form
   async function submitForm() {
-    const name = document.getElementById('playerSelect').value;
+    const checkedPlayers = Array.from(document.querySelectorAll('#checkboxList input:checked')).map(cb => cb.value);
     const matchDate = document.getElementById('matchDate').value;
     const amountPaid = document.getElementById('amountPaid').value;
-    const proof = document.getElementById('paymentProof').files[0];
     const comment = document.getElementById('comment').value;
     const errorMsg = document.getElementById('errorMsg');
 
-    // Validate
-    if (!name || !matchDate || !amountPaid || !proof) {
+    if (checkedPlayers.length === 0 || !matchDate || !amountPaid) {
       errorMsg.style.display = 'block';
-      errorMsg.textContent = '⚠️ Please fill all required fields and upload payment screenshot.';
+      errorMsg.textContent = '⚠️ Please select at least one player, match date and amount.';
       return;
     }
 
     errorMsg.style.display = 'none';
-
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.innerHTML = '<div class="loading-state"><div class="spinner"></div>Submitting...</div>';
 
     try {
-      // Convert image to base64
-      const base64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(proof);
-      });
-
       const payload = {
-        Name: name,
+        Players: checkedPlayers.join(', '),
         'Match Date': matchDate,
         'Amount Paid': parseFloat(amountPaid),
-        'Comment (If any)': comment,
-        'Payment Proof': [{
-          data: base64,
-          mimetype: proof.type,
-          filename: proof.name
-        }]
+        'Comment (If any)': comment
       };
 
       const response = await fetch(WEBHOOK_URL, {
@@ -643,7 +561,6 @@
     }
   }
 
-  // Init
   loadPlayers();
 </script>
 </body>
