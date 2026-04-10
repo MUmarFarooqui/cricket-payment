@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cricket Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a5c2e;
+    --green-light: #2d8a47;
+    --green-pale: #e8f5ee;
+    --gold: #c9a84c;
+    --dark: #0f1f15;
+    --white: #f8fdf9;
+    --gray: #6b7c70;
+    --border: #d0e4d8;
+    --error: #c0392b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(26,92,46,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .cricket-lines {
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 41px);
+    pointer-events: none;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header {
+    background: var(--dark);
+    padding: 32px 32px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '💰';
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    font-size: 120px;
+    opacity: 0.06;
+    transform: rotate(-20deg);
+  }
+
+  .header-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: var(--white);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .header p {
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(248,253,249,0.5);
+    font-weight: 300;
+  }
+
+  .gold-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .form-body { padding: 32px; }
+
+  .field {
+    margin-bottom: 20px;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .field:nth-child(1) { animation-delay: 0.1s; }
+  .field:nth-child(2) { animation-delay: 0.15s; }
+  .field:nth-child(3) { animation-delay: 0.2s; }
+  .field:nth-child(4) { animation-delay: 0.25s; }
+  .field:nth-child(5) { animation-delay: 0.3s; }
+  .field:nth-child(6) { animation-delay: 0.35s; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+
+  label span.required { color: var(--gold); margin-left: 2px; }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--dark);
+    background: white;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  input[type="number"]:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
+  }
+
+  .custom-select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--dark);
+    background: white;
+    transition: all 0.2s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7c70' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+
+  .custom-select:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
+  }
+
+  /* Match checkbox list */
+  .match-list {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .match-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+
+  .match-item:last-child { border-bottom: none; }
+  .match-item:hover { background: var(--green-pale); }
+
+  .match-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .match-item-info { flex: 1; }
+
+  .match-item-date {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  .match-item-detail {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+
+  .match-item-amount {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  .match-item.checked { background: var(--green-pale); }
+  .match-item.checked .match-item-date { color: var(--green); }
+
+  .total-badge {
+    display: none;
+    background: var(--dark);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .total-badge span:first-child {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .total-badge span:last-child {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--green-pale);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-area:hover, .upload-area.dragover {
+    border-color: var(--green-light);
+    background: rgba(45,138,71,0.08);
+  }
+
+  .upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon { font-size: 28px; margin-bottom: 6px; }
+
+  .upload-area p {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  .upload-area p strong {
+    color: var(--green-light);
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .preview-img {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+    object-fit: cover;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--dark);
+    background: white;
+    transition: all 0.2s;
+    outline: none;
+    resize: none;
+    height: 80px;
+  }
+
+  textarea:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  }
+
+  .submit-btn:hover {
+    background: var(--green-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(26,92,46,0.3);
+  }
+
+  .submit-btn:disabled {
+    background: var(--gray);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-screen {
+    display: none;
+    padding: 48px 32px;
+    text-align: center;
+  }
+
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    background: var(--green-pale);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+    animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+
+  .success-screen h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--dark);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .success-screen p { color: var(--gray); font-size: 14px; line-height: 1.6; }
+
+  .error-msg {
+    display: none;
+    background: #fef0ef;
+    border: 1px solid #f5c6c2;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--error);
+    margin-bottom: 16px;
+  }
+
+  .loading-placeholder {
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--gray);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+  }
+
+  .dot-pulse { display: flex; gap: 4px; }
+
+  .dot-pulse span {
+    width: 6px;
+    height: 6px;
+    background: var(--green-light);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+<div class="cricket-lines"></div>
+
+<div class="card">
+  <div class="header">
+    <div class="header-tag">Cricket Team</div>
+    <h1>Payment<br>Submission</h1>
+    <p>Submit payment for one or more matches</p>
+  </div>
+  <div class="gold-bar"></div>
+
+  <div class="form-body" id="formBody">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Player Name -->
+    <div class="field">
+      <label>Your Name <span class="required">*</span></label>
+      <div class="loading-placeholder" id="loadingPlayers">
+        <div class="dot-pulse"><span></span><span></span><span></span></div>
+        Loading players...
+      </div>
+      <select class="custom-select" id="playerSelect" style="display:none;" required>
+        <option value="">Select your name</option>
+      </select>
+    </div>
+
+    <!-- Match Selection (multi-select checkboxes) -->
+    <div class="field">
+      <label>Select Matches <span class="required">*</span></label>
+      <div class="loading-placeholder" id="loadingMatches">
+        <div class="dot-pulse"><span></span><span></span><span></span></div>
+        Loading matches...
+      </div>
+      <div class="match-list" id="matchList" style="display:none;"></div>
+      <div class="total-badge" id="totalBadge">
+        <span>Total Amount Due</span>
+        <span id="totalAmount">PKR 0</span>
+      </div>
+    </div>
+
+    <!-- Amount Paid -->
+    <div class="field">
+      <label>Amount Paid (PKR) <span class="required">*</span></label>
+      <input type="number" id="amountPaid" placeholder="e.g. 5500" min="1" required />
+    </div>
+
+    <!-- Payment Proof -->
+    <div class="field">
+      <label>Payment Screenshot <span class="required">*</span></label>
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="paymentProof" accept="image/*" required />
+        <div class="upload-icon">📎</div>
+        <p><strong>Tap to upload screenshot</strong>Bank transfer proof required</p>
+        <img class="preview-img" id="previewImg" alt="Preview" />
+      </div>
+    </div>
+
+    <!-- Comment -->
+    <div class="field">
+      <label>Comment (Optional)</label>
+      <textarea id="comment" placeholder="Any note for the admin..."></textarea>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+      Submit Payment
+    </button>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <h2>Payment Submitted!</h2>
+    <p>Your payment has been logged successfully.<br>The admin will verify and confirm shortly.</p>
+  </div>
+</div>
+
+<script>
+  const SHEET_ID = '1erUaLSV1T-FV3JF8mc0O3l3Q1mHLwMe1hrB94YQn3mE';
+  const WEBHOOK_URL = 'YOUR_PAYMENT_WEBHOOK_URL_HERE';
+
+  let matchData = [];
+
+  // Load players
+  async function loadPlayers() {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Members&range=B3:B50`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+
+      const select = document.getElementById('playerSelect');
+      json.table.rows.forEach(row => {
+        if (row.c[0] && row.c[0].v) {
+          const opt = document.createElement('option');
+          opt.value = row.c[0].v;
+          opt.textContent = row.c[0].v;
+          select.appendChild(opt);
+        }
+      });
+
+      document.getElementById('loadingPlayers').style.display = 'none';
+      select.style.display = 'block';
+    } catch (e) {
+      document.getElementById('loadingPlayers').innerHTML = '⚠️ Could not load players. Please refresh.';
+    }
+  }
+
+  // Load matches as checkboxes
+  async function loadMatches() {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Matches&range=A3:G50`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+
+      const list = document.getElementById('matchList');
+
+      json.table.rows.forEach(row => {
+        if (!row.c[0] || !row.c[0].v) return;
+
+        const matchId = row.c[0].v;
+        const dateVal = row.c[1] ? row.c[1].v : null;
+        const ground = row.c[2] ? row.c[2].v : '';
+        const perHead = row.c[5] ? row.c[5].v : 0;
+
+        if (!dateVal) return;
+
+        let dateStr = '';
+        let displayDate = '';
+
+        if (typeof dateVal === 'string') {
+          dateStr = dateVal.slice(0, 10);
+          displayDate = dateStr;
+        } else if (dateVal.toString().includes('Date')) {
+          const match = dateVal.toString().match(/Date\((\d+),(\d+),(\d+)\)/);
+          if (match) {
+            const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+            dateStr = d.toISOString().slice(0, 10);
+            displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+          }
+        }
+
+        if (!dateStr) return;
+
+        matchData.push({ matchId, dateStr, displayDate, ground, perHead: parseFloat(perHead) || 0 });
+
+        const item = document.createElement('label');
+        item.className = 'match-item';
+        item.innerHTML = `
+          <input type="checkbox" value="${matchId}" data-perhead="${perHead}" data-date="${dateStr}" />
+          <div class="match-item-info">
+            <div class="match-item-date">${displayDate}</div>
+            <div class="match-item-detail">${ground} &nbsp;·&nbsp; ${matchId}</div>
+          </div>
+          <div class="match-item-amount">PKR ${perHead}</div>
+        `;
+        item.querySelector('input').addEventListener('change', function() {
+          item.classList.toggle('checked', this.checked);
+          updateTotal();
+        });
+        list.appendChild(item);
+      });
+
+      document.getElementById('loadingMatches').style.display = 'none';
+      list.style.display = 'block';
+    } catch (e) {
+      document.getElementById('loadingMatches').innerHTML = '⚠️ Could not load matches. Please refresh.';
+    }
+  }
+
+  function updateTotal() {
+    const checked = document.querySelectorAll('#matchList input:checked');
+    let total = 0;
+    checked.forEach(cb => {
+      total += parseFloat(cb.dataset.perhead) || 0;
+    });
+
+    const badge = document.getElementById('totalBadge');
+    const totalEl = document.getElementById('totalAmount');
+
+    if (checked.length > 0) {
+      badge.style.display = 'flex';
+      totalEl.textContent = `PKR ${total}`;
+      document.getElementById('amountPaid').value = total;
+    } else {
+      badge.style.display = 'none';
+      document.getElementById('amountPaid').value = '';
+    }
+  }
+
+  // File preview
+  document.getElementById('paymentProof').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.getElementById('previewImg');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        document.querySelector('.upload-area p').style.display = 'none';
+        document.querySelector('.upload-icon').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Drag and drop
+  const uploadArea = document.getElementById('uploadArea');
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    document.getElementById('paymentProof').files = e.dataTransfer.files;
+  });
+
+  async function submitForm() {
+    const playerName = document.getElementById('playerSelect').value;
+    const checkedMatches = Array.from(document.querySelectorAll('#matchList input:checked'));
+    const amountPaid = document.getElementById('amountPaid').value;
+    const proof = document.getElementById('paymentProof').files[0];
+    const comment = document.getElementById('comment').value;
+    const errorMsg = document.getElementById('errorMsg');
+
+    if (!playerName || checkedMatches.length === 0 || !amountPaid || !proof) {
+      errorMsg.style.display = 'block';
+      errorMsg.textContent = '⚠️ Please fill all required fields and upload payment screenshot.';
+      return;
+    }
+
+    errorMsg.style.display = 'none';
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="loading-state"><div class="spinner"></div>Submitting...</div>';
+
+    try {
+      // Convert image to base64
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(proof);
+      });
+
+      // Build match details
+      const matchIds = checkedMatches.map(cb => cb.value).join(', ');
+      const matchDates = checkedMatches.map(cb => cb.dataset.date).join(', ');
+      const totalDue = checkedMatches.reduce((sum, cb) => sum + (parseFloat(cb.dataset.perhead) || 0), 0);
+
+      const payload = {
+        'Name': playerName,
+        'Match IDs': matchIds,
+        'Match Dates': matchDates,
+        'Amount Paid': parseFloat(amountPaid),
+        'Total Due': totalDue,
+        'Comment (If any)': comment,
+        'Payment Proof': [{
+          data: base64,
+          mimetype: proof.type,
+          filename: proof.name
+        }]
+      };
+
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok || response.status === 200) {
+        document.getElementById('formBody').style.display = 'none';
+        document.getElementById('successScreen').style.display = 'block';
+      } else {
+        throw new Error('Server error');
+      }
+    } catch (e) {
+      errorMsg.style.display = 'block';
+      errorMsg.textContent = '❌ Submission failed. Please check your connection and try again.';
+      btn.disabled = false;
+      btn.innerHTML = 'Submit Payment';
+    }
+  }
+
+  loadPlayers();
+  loadMatches();
+</script>
+</body>
+</html>
