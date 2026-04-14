@@ -162,31 +162,51 @@
     box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
   }
 
-  .custom-select {
-    width: 100%;
-    padding: 14px 16px;
+  /* Checkbox list for players and matches */
+  .checkbox-list {
     border: 1.5px solid var(--border);
     border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--dark);
+    overflow: hidden;
     background: white;
-    transition: all 0.2s;
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
     cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7c70' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
   }
 
-  .custom-select:focus {
-    border-color: var(--green-light);
-    box-shadow: 0 0 0 3px rgba(45,138,71,0.1);
+  .checkbox-item:last-child { border-bottom: none; }
+  .checkbox-item:hover { background: var(--green-pale); }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
-  /* Match checkbox list */
+  .checkbox-item span { font-size: 15px; color: var(--dark); }
+  .checkbox-item.checked { background: var(--green-pale); }
+  .checkbox-item.checked span { color: var(--green); font-weight: 500; }
+
+  .selected-count {
+    font-size: 12px;
+    color: var(--green-light);
+    margin-top: 6px;
+    font-weight: 500;
+    display: none;
+  }
+
+  /* Match list with details */
   .match-list {
     border: 1.5px solid var(--border);
     border-radius: 12px;
@@ -219,51 +239,43 @@
   }
 
   .match-item-info { flex: 1; }
-
-  .match-item-date {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--dark);
-  }
-
-  .match-item-detail {
-    font-size: 12px;
-    color: var(--gray);
-    margin-top: 2px;
-  }
-
-  .match-item-amount {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--green);
-    white-space: nowrap;
-  }
-
+  .match-item-date { font-size: 14px; font-weight: 600; color: var(--dark); }
+  .match-item-detail { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .match-item-amount { font-size: 13px; font-weight: 600; color: var(--green); white-space: nowrap; }
   .match-item.checked { background: var(--green-pale); }
   .match-item.checked .match-item-date { color: var(--green); }
 
+  /* Total badge */
   .total-badge {
-    display: none;
     background: var(--dark);
     border-radius: 10px;
     padding: 12px 16px;
     margin-top: 10px;
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: center;
   }
 
-  .total-badge span:first-child {
-    font-size: 12px;
+  .total-badge-left { }
+
+  .total-badge-label {
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.4);
+    display: block;
+    margin-bottom: 2px;
   }
 
-  .total-badge span:last-child {
+  .total-badge-detail {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .total-badge-amount {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
+    font-size: 26px;
     color: var(--gold);
     letter-spacing: 1px;
   }
@@ -477,26 +489,26 @@
   <div class="header">
     <div class="header-tag">Cricket Team</div>
     <h1>Payment<br>Submission</h1>
-    <p>Submit payment for one or more matches</p>
+    <p>Submit payment for one or more players & matches</p>
   </div>
   <div class="gold-bar"></div>
 
   <div class="form-body" id="formBody">
     <div class="error-msg" id="errorMsg"></div>
 
-    <!-- Player Name -->
+    <!-- Paying For (multi-select players) -->
     <div class="field">
-      <label>Your Name <span class="required">*</span></label>
+      <label>Paying For <span class="required">*</span></label>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">Select yourself + anyone else you are paying for</p>
       <div class="loading-placeholder" id="loadingPlayers">
         <div class="dot-pulse"><span></span><span></span><span></span></div>
         Loading players...
       </div>
-      <select class="custom-select" id="playerSelect" style="display:none;" required>
-        <option value="">Select your name</option>
-      </select>
+      <div class="checkbox-list" id="playerList" style="display:none;"></div>
+      <div class="selected-count" id="playerCount"></div>
     </div>
 
-    <!-- Match Selection (multi-select checkboxes) -->
+    <!-- Match Selection -->
     <div class="field">
       <label>Select Matches <span class="required">*</span></label>
       <div class="loading-placeholder" id="loadingMatches">
@@ -505,8 +517,11 @@
       </div>
       <div class="match-list" id="matchList" style="display:none;"></div>
       <div class="total-badge" id="totalBadge">
-        <span>Total Amount Due</span>
-        <span id="totalAmount">PKR 0</span>
+        <div class="total-badge-left">
+          <span class="total-badge-label">Total Amount Due</span>
+          <span class="total-badge-detail" id="totalDetail"></span>
+        </div>
+        <span class="total-badge-amount" id="totalAmount">PKR 0</span>
       </div>
     </div>
 
@@ -547,11 +562,11 @@
 
 <script>
   const SHEET_ID = '1erUaLSV1T-FV3JF8mc0O3l3Q1mHLwMe1hrB94YQn3mE';
-  const WEBHOOK_URL = 'https://umarfarooqui.app.n8n.cloud/webhook/1e437cd8-05f7-47b1-82a2-90fb770e1e3b';
+  const WEBHOOK_URL = 'YOUR_PAYMENT_WEBHOOK_URL_HERE';
 
   let matchData = [];
 
-  // Load players
+  // Load players as multi-select checkboxes
   async function loadPlayers() {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Members&range=B3:B50`;
@@ -559,24 +574,41 @@
       const text = await res.text();
       const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
 
-      const select = document.getElementById('playerSelect');
+      const list = document.getElementById('playerList');
       json.table.rows.forEach(row => {
         if (row.c[0] && row.c[0].v) {
-          const opt = document.createElement('option');
-          opt.value = row.c[0].v;
-          opt.textContent = row.c[0].v;
-          select.appendChild(opt);
+          const name = row.c[0].v;
+          const item = document.createElement('label');
+          item.className = 'checkbox-item';
+          item.innerHTML = `<input type="checkbox" value="${name}" /><span>${name}</span>`;
+          item.querySelector('input').addEventListener('change', function() {
+            item.classList.toggle('checked', this.checked);
+            updatePlayerCount();
+            updateTotal();
+          });
+          list.appendChild(item);
         }
       });
 
       document.getElementById('loadingPlayers').style.display = 'none';
-      select.style.display = 'block';
+      list.style.display = 'block';
     } catch (e) {
       document.getElementById('loadingPlayers').innerHTML = '⚠️ Could not load players. Please refresh.';
     }
   }
 
-  // Load matches as checkboxes
+  function updatePlayerCount() {
+    const checked = document.querySelectorAll('#playerList input:checked');
+    const el = document.getElementById('playerCount');
+    if (checked.length > 0) {
+      el.textContent = `${checked.length} player${checked.length > 1 ? 's' : ''} selected`;
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  // Load matches
   async function loadMatches() {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Matches&range=A3:G50`;
@@ -589,38 +621,35 @@
       json.table.rows.forEach(row => {
         if (!row.c[0] || !row.c[0].v) return;
 
-        // Only show matches with Status = Open (column G = index 6)
-        const status = row.c[6] ? row.c[6].v : '';
-        if (status !== 'Open') return;
-
         const matchId = row.c[0].v;
         const dateVal = row.c[1] ? row.c[1].v : null;
         const ground = row.c[2] ? row.c[2].v : '';
         const perHead = row.c[5] ? row.c[5].v : 0;
+        const status = row.c[6] ? row.c[6].v : '';
 
-        if (!dateVal) return;
+        if (!dateVal || status.toUpperCase() !== 'OPEN') return;
 
         let dateStr = '';
         let displayDate = '';
 
         if (typeof dateVal === 'string' && dateVal.includes('Date')) {
-  const match = dateVal.match(/Date\((\d+),(\d+),(\d+)\)/);
-  if (match) {
-    const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-    dateStr = d.toISOString().slice(0, 10);
-    displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  }
-} else if (typeof dateVal === 'string') {
-  dateStr = dateVal.slice(0, 10);
-  displayDate = new Date(dateStr).toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-} else if (dateVal && dateVal.toString().includes('Date')) {
-  const match = dateVal.toString().match(/Date\((\d+),(\d+),(\d+)\)/);
-  if (match) {
-    const d = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
-    dateStr = d.toISOString().slice(0, 10);
-    displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  }
-}
+          const m = dateVal.match(/Date\((\d+),(\d+),(\d+)\)/);
+          if (m) {
+            const d = new Date(parseInt(m[1]), parseInt(m[2]), parseInt(m[3]));
+            dateStr = d.toISOString().slice(0, 10);
+            displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+          }
+        } else if (typeof dateVal === 'string') {
+          dateStr = dateVal.slice(0, 10);
+          displayDate = new Date(dateStr).toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        } else if (dateVal && dateVal.toString().includes('Date')) {
+          const m = dateVal.toString().match(/Date\((\d+),(\d+),(\d+)\)/);
+          if (m) {
+            const d = new Date(parseInt(m[1]), parseInt(m[2]), parseInt(m[3]));
+            dateStr = d.toISOString().slice(0, 10);
+            displayDate = d.toLocaleDateString('en-PK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+          }
+        }
 
         if (!dateStr) return;
 
@@ -634,7 +663,7 @@
             <div class="match-item-date">${displayDate}</div>
             <div class="match-item-detail">${ground} &nbsp;·&nbsp; ${matchId}</div>
           </div>
-          <div class="match-item-amount">PKR ${perHead}</div>
+          <div class="match-item-amount">PKR ${perHead} / player</div>
         `;
         item.querySelector('input').addEventListener('change', function() {
           item.classList.toggle('checked', this.checked);
@@ -651,18 +680,23 @@
   }
 
   function updateTotal() {
-    const checked = document.querySelectorAll('#matchList input:checked');
-    let total = 0;
-    checked.forEach(cb => {
-      total += parseFloat(cb.dataset.perhead) || 0;
-    });
+    const checkedPlayers = document.querySelectorAll('#playerList input:checked');
+    const checkedMatches = document.querySelectorAll('#matchList input:checked');
 
+    const playerCount = checkedPlayers.length;
     const badge = document.getElementById('totalBadge');
     const totalEl = document.getElementById('totalAmount');
+    const detailEl = document.getElementById('totalDetail');
 
-    if (checked.length > 0) {
+    if (playerCount > 0 && checkedMatches.length > 0) {
+      let total = 0;
+      checkedMatches.forEach(cb => {
+        total += (parseFloat(cb.dataset.perhead) || 0) * playerCount;
+      });
+
       badge.style.display = 'flex';
       totalEl.textContent = `PKR ${total}`;
+      detailEl.textContent = `${playerCount} player${playerCount > 1 ? 's' : ''} × ${checkedMatches.length} match${checkedMatches.length > 1 ? 'es' : ''}`;
       document.getElementById('amountPaid').value = total;
     } else {
       badge.style.display = 'none';
@@ -697,16 +731,16 @@
   });
 
   async function submitForm() {
-    const playerName = document.getElementById('playerSelect').value;
+    const checkedPlayers = Array.from(document.querySelectorAll('#playerList input:checked')).map(cb => cb.value);
     const checkedMatches = Array.from(document.querySelectorAll('#matchList input:checked'));
     const amountPaid = document.getElementById('amountPaid').value;
     const proof = document.getElementById('paymentProof').files[0];
     const comment = document.getElementById('comment').value;
     const errorMsg = document.getElementById('errorMsg');
 
-    if (!playerName || checkedMatches.length === 0 || !amountPaid || !proof) {
+    if (checkedPlayers.length === 0 || checkedMatches.length === 0 || !amountPaid || !proof) {
       errorMsg.style.display = 'block';
-      errorMsg.textContent = '⚠️ Please fill all required fields and upload payment screenshot.';
+      errorMsg.textContent = '⚠️ Please select players, matches, enter amount and upload screenshot.';
       return;
     }
 
@@ -716,7 +750,6 @@
     btn.innerHTML = '<div class="loading-state"><div class="spinner"></div>Submitting...</div>';
 
     try {
-      // Convert image to base64
       const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -724,17 +757,17 @@
         reader.readAsDataURL(proof);
       });
 
-      // Build match details
       const matchIds = checkedMatches.map(cb => cb.value).join(', ');
       const matchDates = checkedMatches.map(cb => cb.dataset.date).join(', ');
-      const totalDue = checkedMatches.reduce((sum, cb) => sum + (parseFloat(cb.dataset.perhead) || 0), 0);
+      const totalDue = checkedMatches.reduce((sum, cb) => sum + (parseFloat(cb.dataset.perhead) || 0), 0) * checkedPlayers.length;
 
       const payload = {
-        'Name': playerName,
+        'Players': checkedPlayers.join(', '),
         'Match IDs': matchIds,
         'Match Dates': matchDates,
         'Amount Paid': parseFloat(amountPaid),
         'Total Due': totalDue,
+        'Player Count': checkedPlayers.length,
         'Comment (If any)': comment,
         'Payment Proof': [{
           data: base64,
